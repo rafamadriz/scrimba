@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <main>
+        <container>
+            <h1>Generate a</h1>
+            <h1 class="accent-header">random password</h1>
+            <p>Never use an insecure password again.</p>
+
+            <div>
+                <h2>Settings:</h2>
+
+                <div class="settings">
+                    <div>
+                        <label for="length">Choose password length:</label>
+                        <input id="passwd-length" type="number" name="length" value="16" size="2" max="100" min="8">
+                    </div>
+                    <div>
+                        <input type="checkbox" name="symbols" id="symbols" checked class="settings-toggles" />
+                        <label for="symbols">Symbols</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="numbers" id="numbers" checked class="settings-toggles" />
+                        <label for="numbers">Numbers 0-9</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="uppercase" id="uppercase" checked class="settings-toggles" />
+                        <label for="uppercase">Uppercase A-Z</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" name="lowercase" id="lowercase" checked class="settings-toggles" />
+                        <label for="lowercase">Lowercase a-z</label>
+                    </div>
+                </div>
+            </div>
+
+            <button id="generate-passwd">Generate passwords</button>
+
+            <div id="passwords">
+                <div class="generated-passwd">
+                    <p id="first-generated"></p>
+                        <button>Copy</button>
+                </div>
+                <div class="generated-passwd">
+                    <p id="second-generated"></p>
+                </div>
+            </div>
+        </container>
+    </main>
+
+    <script src="index.js"></script>
+</body>
+
+</html>
