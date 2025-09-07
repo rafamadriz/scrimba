@@ -3,7 +3,6 @@ const lowercase = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "
 const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const symbols = ["~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "-", "+", "=", "{", "[", "}", "]", ",", "|", ":", ";", "<", ">", ".", "?", "/"];
 
-
 function PasswordSettingsGenerator(symbols, numbers, uppercase, lowercase) {
     const settingsEl = document.getElementsByClassName("settings-toggles");
 
@@ -42,7 +41,6 @@ function chooseRandomIndex() {
     const setting = chooseRandomSetting();
     return setting[randomNumber(setting.length)];
 }
-
 
 function generatePassword() {
     const passwdLengthFromEl = document.getElementById("passwd-length")
