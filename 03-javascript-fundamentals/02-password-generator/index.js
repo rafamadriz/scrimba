@@ -4,24 +4,29 @@ const numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const symbols = ["~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "-", "+", "=", "{", "[", "}", "]", ",", "|", ":", ";", "<", ">", ".", "?", "/"];
 
 function PasswordSettingsGenerator(symbols, numbers, uppercase, lowercase) {
-    const settingsEl = document.getElementsByClassName("settings-toggles");
-
-    let enabled = [];
-    for (let i = 0; i < settingsEl.length; i++) {
-        if (settingsEl[i].checked) {
-            enabled.push(settingsEl[i].name)
-        }
-    }
+    let enabled = [...document.getElementsByClassName("settings-toggles")]
+      .filter(setting => setting.checked && setting)
+      .map(enabled => enabled.name);
 
     if (enabled.length < 2) {
         enabled = ["symbols", "numbers", "uppercase", "lowercase"]
     }
 
-    for (let i = 0; i < enabled.length; i++) {
-        if (enabled[i] === "symbols") this.symbols = symbols;
-        if (enabled[i] === "numbers") this.numbers = numbers;
-        if (enabled[i] === "uppercase") this.uppercase = uppercase;
-        if (enabled[i] === "lowercase") this.lowercase = lowercase;
+    for (const setting of enabled) {
+        switch (setting) {
+          case "symbols":
+            this.symbols = symbols;
+            break;
+          case "numbers":
+            this.numbers = numbers;
+            break;
+          case "uppercase":
+            this.uppercase = uppercase;
+            break;
+          case "lowercase":
+            this.lowercase = lowercase;
+            break;
+        }
     }
 }
 
