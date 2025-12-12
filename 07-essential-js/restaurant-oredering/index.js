@@ -1,4 +1,4 @@
-import { menuArray as menu } from "/data.js"
+import { menuArray as menu } from "./data.js"
 
 const createItemsHTMl = () => {
     let itemsHTML = "";
