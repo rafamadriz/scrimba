@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { decode } from "html-entities"
 
 const getTrivia = async () => {
@@ -15,15 +15,8 @@ const getTrivia = async () => {
     }
 }
 
-const Options = (incorrect_answers, correct_answer, id) => {
-    const randomIndex = Math.floor(Math.random() * (incorrect_answers.length + 1))
-    const options = [
-        ...incorrect_answers.slice(0, randomIndex),
-        correct_answer,
-        ...incorrect_answers.slice(randomIndex)
-    ]
+const Options = (options, id) => {
     const optionsEls = options.map(option => {
-        option = decode(option)
         return (
                 <label className={`option`}><input type="radio" name={id} value={option} required /><span>{option}</span></label>
         )
@@ -35,12 +28,12 @@ const Options = (incorrect_answers, correct_answer, id) => {
     )
 }
 
-const Question = (question, incorrect_answers, correct_answer, id) => {
+const Question = (question, options, id) => {
     return (
         <>
             <fieldset className="question">
                 <legend>{decode(question)}</legend>
-                {Options(incorrect_answers, correct_answer, id)}
+                {Options(options, id)}
             </fieldset>
             <hr />
         </>
@@ -55,7 +48,7 @@ const checkAnswers = (event, trivia, setCorrectCount, setGameOver) => {
     const entries = Object.fromEntries(data)
 
     for (const [i, answer] of Object.entries(entries)) {
-        const correct_answer = trivia.results[i].correct_answer
+        const correct_answer = decode(trivia.results[i].correct_answer)
         const input = document.querySelector(`input[name="${i}"]:checked`)
 
         const allInputs = document.querySelectorAll(`input[name="${i}"]`)
@@ -73,11 +66,37 @@ const checkAnswers = (event, trivia, setCorrectCount, setGameOver) => {
     }
 }
 
-const finalMessage = (count, setTrivia) => {
+const playAgain = (setGameOver, setTrivia, setCorrectCount, setShuffledOptions) => {
+    getTrivia().then(data => {
+        setTrivia(data)
+        const shuffled = data.results.map(q => {
+            const randomIndex = Math.floor(Math.random() * (q.incorrect_answers.length + 1))
+            return [
+                ...q.incorrect_answers.slice(0, randomIndex),
+                q.correct_answer,
+                ...q.incorrect_answers.slice(randomIndex)
+            ].map(option => decode(option))
+        })
+        setShuffledOptions(shuffled)
+    })
+    setGameOver(false)
+    setCorrectCount(0)
+
+    const allInputs = document.querySelectorAll("input")
+    for (const input of allInputs) {
+        input.parentElement.classList.remove("answered")
+        input.parentElement.classList.remove("correct")
+        input.parentElement.classList.remove("incorrect")
+        input.disabled = false
+        input.checked = false
+    }
+}
+
+const finalMessage = (count, setGameOver, setTrivia, setCorrectCount, setShuffledOptions) => {
     return (
         <>
-            <p className="score">You scored {count}/5</p> 
-            <button onClick={() => getTrivia().then(data => setTrivia(data))}>Play Again</button>
+            <p className="score">You scored {count}/5 correct answers</p> 
+            <button className="playAgain" onClick={() => playAgain(setGameOver, setTrivia, setCorrectCount, setShuffledOptions)}>Play Again</button>
         </>
     )
 }
@@ -86,23 +105,39 @@ export default function Trivia() {
     const [trivia, setTrivia] = useState(null)
     const [correctCount, setCorrectCount] = useState(0)
     const [gameOver, setGameOver] = useState(null)
+    const [shuffledOptions, setShuffledOptions] = useState([])
 
     useEffect(() => {
-        getTrivia().then(data => setTrivia(data))
+        getTrivia().then(data => {
+            setTrivia(data)
+            const shuffled = data.results.map(q => {
+                const randomIndex = Math.floor(Math.random() * (q.incorrect_answers.length + 1))
+                return [
+                    ...q.incorrect_answers.slice(0, randomIndex),
+                    q.correct_answer,
+                    ...q.incorrect_answers.slice(randomIndex)
+                ].map(option => decode(option))
+            })
+            setShuffledOptions(shuffled)
+        })
     }, [])
 
     if (!trivia) return
 
+    console.log(trivia.results)
+
     const questions = []
     trivia.results.forEach((question, i) => {
-        questions.push(Question(question.question, question.incorrect_answers, question.correct_answer, i))
+        questions.push(Question(question.question, shuffledOptions[i], i))
     })
 
     return (
         <>
             <form onSubmit={() => checkAnswers(event, trivia, setCorrectCount, setGameOver)}>
                 {questions}
-                {gameOver ? finalMessage(correctCount, setTrivia) : <button>Check answers</button>}
+                <div className="final">
+                        {gameOver ? finalMessage(correctCount, setGameOver, setTrivia, setCorrectCount, setShuffledOptions) : <button className="check">Check answers</button>}
+                </div>
             </form>
         </>
     )
